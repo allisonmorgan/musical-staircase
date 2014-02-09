@@ -1,0 +1,117 @@
+
+// We need to initalize a few of the pins from our Arduino. 
+int lightPin1 = 0;  // Analog 0 from the output of multiplexer #1.
+int lightPin2 = 1;  // Analog 1 from the output of multiplexer #2.
+int control0 = 6;  // Selector channel 0 (S0)
+int control1 = 7;  // Selector channel 1 (S1)
+int control2 = 8;  // Selector channel 2 (S2)
+
+int note = 0X3C;
+
+void setup()
+{ 
+  Serial.begin(31250);  // Begin serial communication. This describes with what frequency the Arduino
+                       // communicates with the computer (where the serial monitor is viewed).
+  pinMode(control0, OUTPUT);   // This makes the control pins outputs.
+  pinMode(control1, OUTPUT);
+  pinMode(control2, OUTPUT);
+  pinMode(lightPin1, INPUT);
+  pinMode(lightPin2, INPUT);
+}
+//16,7,
+// HELPER FUNCTION
+//  plays a MIDI note.  Doesn't check to see that
+//  cmd is greater than 127, or that data values are  less than 127:
+void noteOn(int cmd, int pitch, int velocity) {
+  Serial.write(cmd);
+  Serial.write(pitch);
+  Serial.write(velocity);
+}
+// Lasers in lab: (low,low,low), (high,low,low), (low,high,low)
+void checkSwitch (int note) {
+  int sensorValuea = analogRead(lightPin1);
+  int sensorValueb = analogRead(lightPin2);  // read the current output from the first phototransistor. 
+  if (sensorValuea < 100) { noteOn(0x90, note, 0x45);}
+  else { noteOn(0x90, note, 0x00); } 
+  if (sensorValueb < 100) { noteOn(0x90, note+8, 0x45);}
+  else { noteOn(0x90, note+8, 0x00); };
+}
+// Finally the important loop where we register whether or not any of the phototransistors are being covered up or not.
+void loop() {
+  
+ noteOn(0x90, note, 0x00);
+ noteOn(0x90, note+1, 0x00);
+ noteOn(0x90, note+2, 0x00);
+ noteOn(0x90, note+3, 0x00);
+ noteOn(0x90, note+4, 0x00);
+ noteOn(0x90, note+5, 0x00);
+ noteOn(0x90, note+6, 0x00);
+ noteOn(0x90, note+7, 0x00);
+ noteOn(0x90, note+8, 0x00);
+ noteOn(0x90, note+9, 0x00);
+ noteOn(0x90, note+10, 0x00);
+ noteOn(0x90, note+11, 0x00);
+ noteOn(0x90, note+12, 0x00);
+ noteOn(0x90, note+13, 0x00);
+ noteOn(0x90, note+14, 0x00);
+ noteOn(0x90, note+15, 0x00);
+  
+  // STAIR 1                           
+  digitalWrite(control0, LOW);
+  digitalWrite(control1, LOW);
+  digitalWrite(control2, LOW);
+  
+  checkSwitch(note+7);
+  
+//
+  // STAIR 2
+  digitalWrite(control0, LOW);
+  digitalWrite(control1, LOW);
+  digitalWrite(control2, HIGH);
+
+  checkSwitch(note+6);
+
+  // STAIR 3 
+  digitalWrite(control0, LOW);
+  digitalWrite(control1, HIGH);
+  digitalWrite(control2, LOW);
+
+  checkSwitch(note+5);
+  
+  // STAIR 4
+  digitalWrite(control0, LOW);
+  digitalWrite(control1, HIGH);
+  digitalWrite(control2, HIGH);
+
+  checkSwitch(note+4);
+
+  // STAIR 5
+  digitalWrite(control0, HIGH);
+  digitalWrite(control1, LOW);
+  digitalWrite(control2, LOW);
+
+  checkSwitch(note+3);
+
+  // STAIR 6
+  digitalWrite(control0, HIGH);
+  digitalWrite(control1, LOW);
+  digitalWrite(control2, HIGH);
+
+  checkSwitch(note+2);
+  
+  // STAIR 7
+  digitalWrite(control0, HIGH);
+  digitalWrite(control1, HIGH);
+  digitalWrite(control2, LOW);
+
+  checkSwitch(note+1);
+ 
+  // STAIR 8
+  digitalWrite(control0, HIGH);
+  digitalWrite(control1, HIGH);
+  digitalWrite(control2, HIGH);
+
+  checkSwitch(note);
+
+}
+
